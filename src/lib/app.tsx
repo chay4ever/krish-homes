@@ -56,16 +56,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
         await initFirebase(cfg.firebase);
         setFirebaseEnabled(firebaseReady());
         off = await onFirebaseUser(async (u) => {
-          if (u) await loadUser(); else { setUser(null); setFavIds(new Set()); }
+          await loadUser();
           setAuthLoading(false);
         });
-      } else setAuthLoading(false);
+      } else { await loadUser(); setAuthLoading(false); }
       setBooting(false);
     })();
     return () => off?.();
   }, [loadUser]);
 
-  const logout = useCallback(async () => { await firebaseSignOut(); setUser(null); setFavIds(new Set()); toast("Signed out", "info"); }, [toast]);
+  const logout = useCallback(async () => { await firebaseSignOut(); await api.post("/api/auth/logout").catch(() => {}); setUser(null); setFavIds(new Set()); toast("Signed out", "info"); }, [toast]);
   const openAuth = useCallback((reason?: string) => setAuthOpen(reason ?? ""), []);
   const requireAuth = useCallback((reason: string, fn: () => void) => { if (user) fn(); else setAuthOpen(reason); }, [user]);
 

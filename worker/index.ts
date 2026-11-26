@@ -5,6 +5,7 @@ import { ensureDb } from "./db";
 import { pub } from "./routes/public";
 import { user } from "./routes/user";
 import { staffAuth } from "./routes/staff";
+import { userAuth } from "./routes/userauth";
 import { admin } from "./routes/admin";
 import { readStaff, userFromRequest } from "./auth";
 import { rateLimit, randomId } from "./util";
@@ -26,6 +27,7 @@ app.use("/api/*", async (c, next) => {
 app.route("/api", pub);
 app.route("/api/u", user);
 app.route("/api/staff", staffAuth);
+app.route("/api/auth", userAuth);
 app.route("/api/admin", admin);
 
 const IMAGE_TYPES: Record<string, string> = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp", "image/gif": "gif", "image/avif": "avif" };

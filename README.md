@@ -8,7 +8,7 @@ A premium, mobile-first property marketplace (buy / rent / commercial / plots / 
 | API | Hono on Cloudflare Workers (same Worker serves the SPA via static assets) |
 | Database | Cloudflare **D1** (schema in `migrations/`, auto-applied + demo data seeded on first request) |
 | Files | Cloudflare **R2** (listing photos, served from `/media/*`) |
-| End-user auth | **Firebase Auth** — Google, phone OTP, email/password (ID tokens verified server-side) |
+| End-user auth | Built-in email + password out of the box; **Firebase Auth** (Google, phone OTP) switched on later from the admin Settings page |
 | Staff auth | Email + password (PBKDF2, httpOnly JWT cookie) for **Super Admin**, **Admin Manager**, **Agent** |
 
 ## Features
@@ -28,7 +28,7 @@ npm install
 npm run dev        # Vite + local D1/R2 emulation (miniflare)
 ```
 Local staff login: `admin@krishhomes.in` / `ChangeMe@123` (you're forced to change it).
-Firebase sign-in needs the vars below; everything else works without it.
+Visitors can register with email + password locally; Firebase is optional.
 
 ## Rename the brand
 Super Admin → `/admin/settings` (name, tagline, hero copy, contact). For the logo mark edit `src/components/Brand.tsx`, `public/favicon.svg`, `public/icon-*.png`, `public/manifest.webmanifest`.

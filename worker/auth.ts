@@ -73,16 +73,46 @@ export const requireStaff = (...roles: StaffSession["role"][]) => async (c: Cont
 
 const jwks = createRemoteJWKSet(new URL("https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com"));
 
+export interface FirebaseCfg { apiKey: string; authDomain: string; projectId: string; appId?: string }
+
+/** Firebase web config: saved in D1 by the Super Admin (Settings) first, Worker env vars as fallback. Null = not configured. */
+export async function getFirebaseConfig(env: Env): Promise<FirebaseCfg | null> {
+  const row = await env.DB.prepare("SELECT value FROM settings WHERE key='firebase'").first<{ value: string }>();
+  let c: Partial<FirebaseCfg> = {};
+  try { c = row ? JSON.parse(row.value) : {}; } catch { /* ignore */ }
+  const apiKey = c.apiKey || env.FIREBASE_API_KEY;
+  const projectId = c.projectId || env.FIREBASE_PROJECT_ID;
+  if (!apiKey || !projectId) return null;
+  return { apiKey, projectId, authDomain: c.authDomain || env.FIREBASE_AUTH_DOMAIN || `${projectId}.firebaseapp.com`, appId: c.appId || env.FIREBASE_APP_ID || undefined };
+}
+
 export async function verifyFirebase(env: Env, token: string) {
-  const pid = env.FIREBASE_PROJECT_ID;
+  const pid = (await getFirebaseConfig(env))?.projectId;
   if (!pid) throw new Error("Firebase is not configured");
   const { payload } = await jwtVerify(token, jwks, { issuer: `https://securetoken.google.com/${pid}`, audience: pid });
   return payload as { sub: string; email?: string; name?: string; picture?: string; phone_number?: string };
 }
 
+export const USER_COOKIE = "kh_user";
+
+export async function signUserToken(env: Env, id: number) {
+  return new SignJWT({ k: "user" }).setProtectedHeader({ alg: "HS256" }).setSubject(String(id)).setIssuedAt().setExpirationTime("30d").sign(await jwtKey(env));
+}
+
+async function localUser(c: Context<HonoEnv>): Promise<AppUser | null> {
+  const tok = getCookie(c, USER_COOKIE);
+  if (!tok) return null;
+  try {
+    const { payload } = await jwtVerify(tok, await jwtKey(c.env), { algorithms: ["HS256"] });
+    if (payload.k !== "user") return null;
+    const u = await c.env.DB.prepare("SELECT id,firebase_uid,name,email,phone,photo,blocked FROM users WHERE id=?").bind(Number(payload.sub)).first<AppUser>();
+    return u && !u.blocked ? u : null;
+  } catch { return null; }
+}
+
 export async function userFromRequest(c: Context<HonoEnv>): Promise<AppUser | null> {
   const h = c.req.header("Authorization");
-  if (!h?.startsWith("Bearer ")) return null;
+  if (!h?.startsWith("Bearer ")) return localUser(c);
   try {
     const p = await verifyFirebase(c.env, h.slice(7));
     const db = c.env.DB;

@@ -26,6 +26,8 @@ CREATE TABLE IF NOT EXISTS users (
   phone TEXT,
   photo TEXT,
   blocked INTEGER NOT NULL DEFAULT 0,
+  password_hash TEXT,
+  salt TEXT,
   created_at TEXT NOT NULL DEFAULT (datetime('now')),
   last_seen_at TEXT
 );

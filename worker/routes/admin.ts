@@ -305,6 +305,23 @@ admin.put("/settings/brand", sup, async (c) => {
   audit(c, "settings.brand");
   return c.json({ ok: true });
 });
+admin.get("/settings/firebase", sup, async (c) => {
+  const row = await c.env.DB.prepare("SELECT value FROM settings WHERE key='firebase'").first<{ value: string }>();
+  return c.json({ config: parseJson(row?.value, {}), fromEnv: !!(c.env.FIREBASE_API_KEY && c.env.FIREBASE_PROJECT_ID) });
+});
+admin.put("/settings/firebase", sup, async (c) => {
+  const b = await c.req.json().catch(() => ({}));
+  const cfg = { apiKey: str(b.apiKey, 200), authDomain: str(b.authDomain, 200), projectId: str(b.projectId, 120), appId: str(b.appId, 200) };
+  if (!cfg.apiKey && !cfg.projectId) {
+    await c.env.DB.prepare("DELETE FROM settings WHERE key='firebase'").run();
+    audit(c, "settings.firebase", "cleared");
+    return c.json({ ok: true, enabled: false });
+  }
+  if (!cfg.apiKey || !cfg.projectId) return c.json({ error: "API key and Project ID are both required" }, 400);
+  await c.env.DB.prepare("INSERT INTO settings (key,value) VALUES ('firebase',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value").bind(JSON.stringify(cfg)).run();
+  audit(c, "settings.firebase", "updated");
+  return c.json({ ok: true, enabled: true });
+});
 admin.get("/audit", sup, async (c) => {
   const r = await c.env.DB.prepare("SELECT a.id,a.action,a.detail,a.created_at,s.name staff FROM audit_log a LEFT JOIN staff s ON s.id=a.staff_id ORDER BY a.id DESC LIMIT 100").all();
   return c.json({ items: r.results });

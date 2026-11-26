@@ -123,6 +123,9 @@ export function AdminStaff() {
 export function AdminSettings() {
   const { brand, toast } = useApp();
   const [f, setF] = useState<any>(brand);
+  const [fb, setFb] = useState<any>({ apiKey: "", authDomain: "", projectId: "", appId: "" });
+  const { data: fbData } = useFetch<{ config: any; fromEnv: boolean }>("/api/admin/settings/firebase");
+  useEffect(() => { if (fbData) setFb({ apiKey: "", authDomain: "", projectId: "", appId: "", ...fbData.config }); }, [fbData]);
   const { data: audit } = useFetch<{ items: any[] }>("/api/admin/audit");
   useEffect(() => setF(brand), [brand]);
   const F = (k: string, label: string, area?: boolean) => <Field label={label}>{area ? <textarea className="input" value={f[k] ?? ""} onChange={(e) => setF({ ...f, [k]: e.target.value })} /> : <Input value={f[k] ?? ""} onChange={(e) => setF({ ...f, [k]: e.target.value })} />}</Field>;
@@ -135,7 +138,13 @@ export function AdminSettings() {
           {F("name", "Brand name")}{F("tagline", "Tagline")}{F("heroTitle", "Homepage headline")}{F("heroSubtitle", "Homepage sub-headline", true)}{F("phone", "Phone")}{F("whatsapp", "WhatsApp number (digits only)")}{F("email", "Email")}{F("address", "Address")}
           <Button type="submit" size="lg" full>Save settings</Button>
         </form>
-        <div className="rounded-3xl border border-line bg-white p-5 shadow-card"><h3 className="mb-3 flex items-center gap-2 font-extrabold"><History size={18} className="text-brand-600" />Audit log</h3>
+        <form className="space-y-4 rounded-3xl border border-line bg-white p-5 shadow-card lg:col-span-2" onSubmit={async (e) => { e.preventDefault(); try { const r = await api.put<{ enabled: boolean }>("/api/admin/settings/firebase", fb); toast(r.enabled ? "Firebase enabled — reload the site to use it" : "Firebase disabled — using built-in sign-in"); } catch (x: any) { toast(x.message, "error"); } }}>
+          <h3 className="flex items-center gap-2 font-extrabold"><KeyRound size={18} className="text-brand-600" />Firebase sign-in (optional)</h3>
+          <p className="text-sm text-ink-3">Until Firebase is set up, visitors sign in with the built-in email + password. Paste your Firebase <b>web app</b> config (Project settings → General → Your apps) to switch on Google and phone-OTP sign-in. Also enable those providers and add this site's domain under Authentication → Settings → Authorized domains. Clear both fields and save to switch back. {fbData?.fromEnv && <span className="font-semibold text-brand-800">Currently also configured via Worker variables.</span>}</p>
+          <div className="grid gap-4 sm:grid-cols-2"><Field label="API key"><Input value={fb.apiKey ?? ""} onChange={(e) => setFb({ ...fb, apiKey: e.target.value })} placeholder="AIza…" autoComplete="off" /></Field><Field label="Project ID"><Input value={fb.projectId ?? ""} onChange={(e) => setFb({ ...fb, projectId: e.target.value })} placeholder="my-project" /></Field><Field label="Auth domain (optional)"><Input value={fb.authDomain ?? ""} onChange={(e) => setFb({ ...fb, authDomain: e.target.value })} placeholder="my-project.firebaseapp.com" /></Field><Field label="App ID (optional)"><Input value={fb.appId ?? ""} onChange={(e) => setFb({ ...fb, appId: e.target.value })} /></Field></div>
+          <Button type="submit" size="lg">Save Firebase settings</Button>
+        </form>
+        <div className="rounded-3xl border border-line bg-white p-5 shadow-card lg:col-span-2"><h3 className="mb-3 flex items-center gap-2 font-extrabold"><History size={18} className="text-brand-600" />Audit log</h3>
           <ul className="max-h-[520px] space-y-2 overflow-y-auto text-sm">{audit?.items.map((a) => <li key={a.id} className="flex justify-between gap-3 border-b border-line/60 pb-2"><span><b>{a.staff ?? "System"}</b> · {a.action}{a.detail ? ` · ${a.detail}` : ""}</span><span className="shrink-0 text-xs text-ink-3">{timeAgo(a.created_at)}</span></li>)}{!audit?.items.length && <li className="text-ink-3">No activity yet.</li>}</ul></div>
       </div>
     </div>

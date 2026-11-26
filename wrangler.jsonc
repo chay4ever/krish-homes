@@ -16,12 +16,8 @@
     { "binding": "DB", "database_name": "krish-homes-db", "migrations_dir": "migrations" }
   ],
   "r2_buckets": [{ "binding": "MEDIA", "bucket_name": "krish-homes-media" }],
-  // Public (non-secret) runtime config. Set these in Cloudflare > Worker > Settings > Variables.
+  // Public (non-secret) runtime config. Firebase is configured later in the admin Settings page (optional env fallback: FIREBASE_API_KEY, FIREBASE_PROJECT_ID, FIREBASE_AUTH_DOMAIN, FIREBASE_APP_ID).
   "vars": {
-    "FIREBASE_API_KEY": "",
-    "FIREBASE_AUTH_DOMAIN": "",
-    "FIREBASE_PROJECT_ID": "",
-    "FIREBASE_APP_ID": "",
     "SUPER_ADMIN_EMAIL": "admin@krishhomes.in"
   }
   // Secrets (set with `wrangler secret put` or in the dashboard):

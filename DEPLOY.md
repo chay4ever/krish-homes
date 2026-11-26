@@ -10,10 +10,9 @@
    |---|---|---|
    | `SUPER_ADMIN_EMAIL` | variable | Super admin login email (default `admin@krishhomes.in`) |
    | `SUPER_ADMIN_PASSWORD` | **secret** | Initial password. If unset it's `ChangeMe@123` and must be changed at first login. Only used when no super admin exists yet |
-   | `FIREBASE_API_KEY`, `FIREBASE_AUTH_DOMAIN`, `FIREBASE_PROJECT_ID`, `FIREBASE_APP_ID` | variable | Firebase web app config (public values) |
    | `JWT_SECRET` | secret, optional | Staff session signing key (auto-generated in D1 if absent) |
    Set the vars in the dashboard (or edit `vars` in `wrangler.jsonc`).
-5. **Firebase console** → Authentication → enable **Google**, **Phone** and **Email/Password**; add your Workers domain / custom domain under *Settings → Authorized domains*.
+5. **Firebase is optional.** Until you add it, visitors sign in with built-in email + password (stored in D1). To enable Google / phone OTP later: Super Admin → `/admin/settings` → *Firebase sign-in*, paste the web-app config, save. In the Firebase console enable the providers and add your domain under *Authentication → Settings → Authorized domains*. (Worker vars `FIREBASE_*` still work as a fallback.)
 6. Open `https://<your-worker>/admin` and sign in. Change the password, then edit brand details in *Settings*.
 
 ## Going live checklist

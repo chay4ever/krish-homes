@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import type { HonoEnv } from "../env";
-import { userFromRequest } from "../auth";
+import { getFirebaseConfig, userFromRequest } from "../auth";
 import { DEFAULT_BRAND } from "../../shared/constants";
 import { parseJson, str, isPhone, isEmail, rateLimit, toInt } from "../util";
 
@@ -20,10 +20,7 @@ export async function getBrand(db: D1Database) {
 
 pub.get("/config", async (c) => {
   const e = c.env;
-  const firebase = e.FIREBASE_API_KEY && e.FIREBASE_PROJECT_ID
-    ? { apiKey: e.FIREBASE_API_KEY, authDomain: e.FIREBASE_AUTH_DOMAIN || `${e.FIREBASE_PROJECT_ID}.firebaseapp.com`, projectId: e.FIREBASE_PROJECT_ID, appId: e.FIREBASE_APP_ID || undefined }
-    : null;
-  c.header("Cache-Control", "public, max-age=60");
+  const firebase = await getFirebaseConfig(e);
   return c.json({ brand: await getBrand(e.DB), firebase });
 });
 
