@@ -6,10 +6,12 @@ import { DEFAULT_BRAND, type Brand } from "../../shared/constants";
 import type { City, DbUser, Locality } from "./types";
 import { firebaseSignOut, initFirebase, onFirebaseUser, firebaseReady } from "./firebase";
 import AuthModal from "@/components/AuthModal";
+import LocationPicker from "@/components/LocationPicker";
 
 type ToastKind = "success" | "error" | "info";
 interface Ctx {
   brand: Brand; cities: City[]; localities: Locality[]; firebaseEnabled: boolean; booting: boolean;
+  city: City | null; selectCity: (slug: string | null) => void; pickerOpen: boolean; openPicker: () => void; closePicker: () => void;
   user: DbUser | null; authLoading: boolean; openAuth: (reason?: string) => void; logout: () => Promise<void>; refreshUser: () => Promise<void>;
   favIds: Set<number>; toggleFav: (id: number) => Promise<void>; requireAuth: (reason: string, fn: () => void) => void;
   toast: (msg: string, kind?: ToastKind) => void;
@@ -26,6 +28,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<DbUser | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [authOpen, setAuthOpen] = useState<string | null>(null);
+  const [citySlug, setCitySlug] = useState<string | null>(() => { try { return localStorage.getItem("kh_city"); } catch { return null; } });
+  const [pickerOpen, setPickerOpen] = useState(false);
   const [favIds, setFavIds] = useState<Set<number>>(new Set());
   const [toasts, setToasts] = useState<{ id: number; msg: string; kind: ToastKind }[]>([]);
   const tid = useRef(0);
@@ -65,6 +69,20 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return () => off?.();
   }, [loadUser]);
 
+  const city = useMemo(() => cities.find((c) => c.slug === citySlug) ?? null, [cities, citySlug]);
+  const selectCity = useCallback((slug: string | null) => {
+    setCitySlug(slug);
+    try { slug ? localStorage.setItem("kh_city", slug) : localStorage.removeItem("kh_city"); localStorage.setItem("kh_city_asked", "1"); } catch { /* private mode */ }
+    setPickerOpen(false);
+  }, []);
+  const openPicker = useCallback(() => setPickerOpen(true), []);
+  const closePicker = useCallback(() => { try { localStorage.setItem("kh_city_asked", "1"); } catch { /* ignore */ } setPickerOpen(false); }, []);
+  // First visit: ask for a city once (like NoBroker / 99acres), after the app has loaded.
+  useEffect(() => {
+    if (booting || !cities.length) return;
+    try { if (!localStorage.getItem("kh_city") && !localStorage.getItem("kh_city_asked") && !location.pathname.startsWith("/admin")) setPickerOpen(true); } catch { /* ignore */ }
+  }, [booting, cities.length]);
+
   const logout = useCallback(async () => { await firebaseSignOut(); await api.post("/api/auth/logout").catch(() => {}); setUser(null); setFavIds(new Set()); toast("Signed out", "info"); }, [toast]);
   const openAuth = useCallback((reason?: string) => setAuthOpen(reason ?? ""), []);
   const requireAuth = useCallback((reason: string, fn: () => void) => { if (user) fn(); else setAuthOpen(reason); }, [user]);
@@ -77,12 +95,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
     catch (e: any) { setFavIds((s) => { const n = new Set(s); had ? n.add(id) : n.delete(id); return n; }); toast(e.message, "error"); }
   }, [user, favIds, toast]);
 
-  const value = useMemo(() => ({ brand, cities, localities, firebaseEnabled, booting, user, authLoading, openAuth, logout, refreshUser: loadUser, favIds, toggleFav, requireAuth, toast }),
-    [brand, cities, localities, firebaseEnabled, booting, user, authLoading, openAuth, logout, loadUser, favIds, toggleFav, requireAuth, toast]);
+  const value = useMemo(() => ({ city, selectCity, pickerOpen, openPicker, closePicker, brand, cities, localities, firebaseEnabled, booting, user, authLoading, openAuth, logout, refreshUser: loadUser, favIds, toggleFav, requireAuth, toast }),
+    [city, selectCity, pickerOpen, openPicker, closePicker, brand, cities, localities, firebaseEnabled, booting, user, authLoading, openAuth, logout, loadUser, favIds, toggleFav, requireAuth, toast]);
 
   return (
     <AppCtx.Provider value={value}>
       {children}
+      <LocationPicker />
       <AuthModal open={authOpen !== null} reason={authOpen ?? ""} onClose={() => setAuthOpen(null)} onDone={async () => { await loadUser(); setAuthOpen(null); toast("Welcome! You're signed in."); }} />
       <div className="pointer-events-none fixed inset-x-0 top-[calc(var(--safe-t)+12px)] z-[100] flex flex-col items-center gap-2 px-4 lg:bottom-6 lg:top-auto lg:items-end lg:pr-6">
         <AnimatePresence>

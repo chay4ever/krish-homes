@@ -22,6 +22,7 @@ export function HeartButton({ id, className }: { id: number; className?: string 
   );
 }
 
+const isNew = (p: Property) => { const t = new Date((p.published_at ?? p.created_at).replace(" ", "T") + "Z").getTime(); return Date.now() - t < 3 * 86400_000; };
 const furnLabel: Record<string, string> = { unfurnished: "Unfurnished", semi: "Semi-furnished", full: "Furnished" };
 
 export function PropertyCard({ p, layout = "grid", className }: { p: Property; layout?: "grid" | "list"; className?: string }) {
@@ -37,6 +38,8 @@ export function PropertyCard({ p, layout = "grid", className }: { p: Property; l
         <div className="absolute left-3 top-3 flex flex-wrap gap-1.5">
           {p.featured ? <Badge tone="gold"><Star size={11} className="fill-current" /> Featured</Badge> : null}
           {p.verified ? <Badge tone="brand" className="bg-white/95"><BadgeCheck size={12} /> Verified</Badge> : null}
+          {p.owner_type === "owner" ? <Badge tone="sky" className="bg-white/95">Zero brokerage</Badge> : null}
+          {isNew(p) ? <Badge tone="coral" className="bg-white/95">Just listed</Badge> : null}
         </div>
         <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between text-white">
           <div>

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 import { motion } from "motion/react";
 import { MapPin, Search } from "lucide-react";
@@ -17,17 +17,18 @@ const BUDGET_RENT = [["", "Any budget"], ["0-20000", "Under ₹20K"], ["20000-40
 
 export function SearchBox({ className }: { className?: string }) {
   const nav = useNavigate();
-  const { cities, localities } = useApp();
+  const { cities, localities, city: ctxCity } = useApp();
   const [tab, setTab] = useState<(typeof TABS)[number]["k"]>("sale");
-  const [city, setCity] = useState("");
+  const [city, setCity] = useState(ctxCity?.slug ?? "");
+  useEffect(() => setCity(ctxCity?.slug ?? ""), [ctxCity]);
   const [q, setQ] = useState("");
   const [beds, setBeds] = useState("");
   const [budget, setBudget] = useState("");
   const sugg = useMemo(() => {
     const t = q.trim().toLowerCase();
     if (t.length < 2) return [];
-    return localities.filter((l) => l.name.toLowerCase().includes(t)).slice(0, 5).map((l) => ({ l, city: cities.find((c) => c.id === l.city_id) }));
-  }, [q, localities, cities]);
+    return localities.filter((l) => l.name.toLowerCase().includes(t) && (!city || cities.find((c) => c.id === l.city_id)?.slug === city)).slice(0, 5).map((l) => ({ l, city: cities.find((c) => c.id === l.city_id) }));
+  }, [q, localities, cities, city]);
 
   const go = (override?: { city?: string; locality?: string }) => {
     const t = TABS.find((x) => x.k === tab)!;
@@ -47,15 +48,15 @@ export function SearchBox({ className }: { className?: string }) {
           </button>
         ))}
       </div>
-      <form onSubmit={(e) => { e.preventDefault(); go(); }} className="grid grid-cols-2 gap-2.5 lg:grid-cols-[180px_1fr_150px_170px_auto]">
-        <div className="relative col-span-2 lg:col-span-1">
+      <form onSubmit={(e) => { e.preventDefault(); go(); }} className="grid grid-cols-2 gap-2.5 md:grid-cols-4 lg:grid-cols-[minmax(170px,210px)_1fr_130px_150px_auto] xl:grid-cols-[220px_1fr_150px_170px_auto]">
+        <div className="relative col-span-2 md:col-span-1 lg:col-span-1">
           <MapPin size={17} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-brand-600" />
           <select className="input !pl-10" value={city} onChange={(e) => setCity(e.target.value)} aria-label="City">
             <option value="">All cities</option>
             {cities.map((c) => <option key={c.id} value={c.slug}>{c.name}</option>)}
           </select>
         </div>
-        <div className="relative col-span-2 lg:col-span-1">
+        <div className="relative col-span-2 md:col-span-3 lg:col-span-1">
           <Search size={17} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-3" />
           <input className="input !pl-10" placeholder="Locality, project or landmark" value={q} onChange={(e) => setQ(e.target.value)} aria-label="Search" />
           {sugg.length > 0 && (
@@ -71,10 +72,10 @@ export function SearchBox({ className }: { className?: string }) {
         <select className="input" value={showBeds ? beds : ""} disabled={!showBeds} onChange={(e) => setBeds(e.target.value)} aria-label="Bedrooms">
           <option value="">Any BHK</option>{[1, 2, 3, 4].map((n) => <option key={n} value={n}>{n === 4 ? "4+ BHK" : `${n} BHK`}</option>)}
         </select>
-        <select className="input" value={budget} onChange={(e) => setBudget(e.target.value)} aria-label="Budget">
+        <select className="input md:col-span-2 lg:col-span-1" value={budget} onChange={(e) => setBudget(e.target.value)} aria-label="Budget">
           {budgets.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
         </select>
-        <Button type="submit" size="lg" className="col-span-2 lg:col-span-1 lg:px-8"><Search size={19} /> Search</Button>
+        <Button type="submit" variant="coral" size="lg" className="col-span-2 md:col-span-1 lg:px-8"><Search size={19} /> Search</Button>
       </form>
     </div>
   );

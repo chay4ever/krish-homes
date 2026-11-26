@@ -147,7 +147,7 @@ export default function PropertyDetail() {
           )}
         </div>
 
-        <aside className="hidden lg:block"><div className="sticky top-24 space-y-4">{ContactCard}<p className={cx("flex items-center gap-2 rounded-2xl bg-brand-50 p-3.5 text-xs font-semibold text-brand-800")}><ShieldCheck size={18} className="shrink-0" />Never pay advance money before visiting. Report suspicious listings to {brand.email}.</p></div></aside>
+        <aside className="hidden lg:block"><div className="sticky top-24 space-y-4">{ContactCard}{p.owner_type === "owner" && <p className="flex items-center gap-2 rounded-2xl bg-gradient-to-r from-sky-50 to-cyan-50 p-3.5 text-sm font-bold text-sky-800"><BadgeCheck size={18} className="shrink-0" />Posted by the owner — zero brokerage. Call directly and negotiate freely.</p>}<p className={cx("flex items-center gap-2 rounded-2xl bg-brand-50 p-3.5 text-xs font-semibold text-brand-800")}><ShieldCheck size={18} className="shrink-0" />Never pay advance money before visiting. Report suspicious listings to {brand.email}.</p></div></aside>
       </div>
 
       {/* Mobile sticky CTA */}
