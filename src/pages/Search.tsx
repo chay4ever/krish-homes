@@ -59,7 +59,7 @@ export default function Search() {
   });
 
   return (
-    <div className="mx-auto max-w-7xl px-4 pb-10 pt-4 sm:px-6 lg:pt-8">
+    <div className="mx-auto max-w-7xl px-4 pb-10 sm:px-6">
       {/* sticky bar */}
       <div className="sticky top-[calc(56px+var(--safe-t))] z-30 -mx-4 border-b border-line/60 px-4 py-3 glass sm:-mx-6 sm:px-6 lg:top-[72px]">
         <div className="mx-auto flex max-w-7xl items-center gap-2.5">

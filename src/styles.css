@@ -22,6 +22,12 @@
   --color-gold-500: #c18d2f;
   --color-gold-600: #a07220;
 
+  --color-coral-300: #f9b49c;
+  --color-coral-400: #f4845f;
+  --color-coral-500: #ec6b45;
+  --color-coral-600: #d9552f;
+  --color-navy-900: #0b2a45;
+  --color-navy-800: #0f3a5c;
   --color-ink: #0e1a2b;
   --color-ink-2: #3b4757;
   --color-ink-3: #6b7685;
@@ -53,6 +59,7 @@ h1, h2, h3 { letter-spacing: -0.02em; }
 button, a, [role="button"] { touch-action: manipulation; }
 ::selection { background: var(--color-brand-200); }
 
+@layer components {
 .no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .snap-row { display: flex; gap: 14px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 6px; scroll-padding-inline: 16px; }
@@ -73,8 +80,20 @@ select.input { appearance: none; background-image: url("data:image/svg+xml,%3Csv
 textarea.input { resize: vertical; min-height: 110px; }
 
 .glass { background: rgb(255 255 255 / 0.78); backdrop-filter: saturate(180%) blur(18px); -webkit-backdrop-filter: saturate(180%) blur(18px); }
-.bg-hero { background: radial-gradient(1200px 500px at 85% -10%, rgb(212 162 76 / 0.28), transparent 60%), radial-gradient(900px 500px at -10% 110%, rgb(58 171 149 / 0.35), transparent 60%), linear-gradient(160deg, #04211d, #0a4a40 55%, #0a5e50); }
+.bg-hero { background:
+  radial-gradient(900px 480px at 92% -12%, rgb(244 132 95 / 0.40), transparent 60%),
+  radial-gradient(800px 520px at -8% 108%, rgb(56 189 248 / 0.32), transparent 60%),
+  radial-gradient(640px 420px at 55% 125%, rgb(212 162 76 / 0.28), transparent 60%),
+  linear-gradient(150deg, #0b2a45 0%, #0f5a73 42%, #0f7766 78%, #1f8f7a 100%); }
+.bg-sunset { background: linear-gradient(135deg, #0b2a45 0%, #4b3a8c 52%, #ec6b45 120%); }
+.bg-navy { background: linear-gradient(160deg, #0b2a45, #0f3a5c 60%, #0a4a52); }
+.bg-calm { background: linear-gradient(180deg, #eaf6fb 0%, #f1f8f4 45%, transparent 100%); }
+.bg-blush { background: linear-gradient(180deg, #fff1ea 0%, #fdf6ef 50%, transparent 100%); }
+.bg-lilac { background: linear-gradient(180deg, #f1eefc 0%, #f6f4fd 50%, transparent 100%); }
+.stripe { height: 3px; background: linear-gradient(90deg, #0f7766, #38bdf8, #8b7bd8, #f4845f, #d4a24c); }
 .text-gradient { background: linear-gradient(90deg, var(--color-gold-300), #fff0c9); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .prose-lite p { margin: 0 0 1rem; line-height: 1.75; color: var(--color-ink-2); }
 .tabular { font-variant-numeric: tabular-nums; }
+}
+
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; } }

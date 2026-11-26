@@ -27,7 +27,7 @@ pub.get("/config", async (c) => {
 pub.get("/meta", async (c) => {
   const db = c.env.DB;
   const [cities, localities] = await Promise.all([
-    db.prepare("SELECT id,slug,name,state,image,featured,(SELECT COUNT(*) FROM properties p WHERE p.city_id=cities.id AND p.status='active') AS listings FROM cities ORDER BY featured DESC, name").all(),
+    db.prepare("SELECT id,slug,name,state,image,featured,(SELECT COUNT(*) FROM properties p WHERE p.city_id=cities.id AND p.status='active') AS listings FROM cities ORDER BY (state!='Andhra Pradesh'), name").all(),
     db.prepare("SELECT id,city_id,slug,name FROM localities ORDER BY name").all(),
   ]);
   c.header("Cache-Control", "public, max-age=120");
@@ -36,18 +36,27 @@ pub.get("/meta", async (c) => {
 
 pub.get("/home", async (c) => {
   const db = c.env.DB;
-  const [featured, latestSale, latestRent, projects, posts, stats] = await Promise.all([
-    db.prepare(`SELECT ${PROP_COLS} ${PROP_JOIN} WHERE p.status='active' AND p.featured=1 ORDER BY p.published_at DESC LIMIT 10`).all(),
-    db.prepare(`SELECT ${PROP_COLS} ${PROP_JOIN} WHERE p.status='active' AND p.listing_type='sale' ORDER BY p.published_at DESC LIMIT 8`).all(),
-    db.prepare(`SELECT ${PROP_COLS} ${PROP_JOIN} WHERE p.status='active' AND p.listing_type='rent' ORDER BY p.published_at DESC LIMIT 8`).all(),
-    db.prepare(`SELECT pr.id,pr.slug,pr.name,pr.builder,pr.configurations,pr.price_min,pr.price_max,pr.possession,pr.images,c.name city_name,l.name locality_name FROM projects pr LEFT JOIN cities c ON c.id=pr.city_id LEFT JOIN localities l ON l.id=pr.locality_id WHERE pr.status='active' ORDER BY pr.featured DESC, pr.id DESC LIMIT 6`).all(),
+  const citySlug = c.req.query("city") || "";
+  const city = citySlug ? await db.prepare("SELECT id,slug,name,state FROM cities WHERE slug=?").bind(citySlug).first<{ id: number; slug: string; name: string; state: string }>() : null;
+  const cw = city ? "AND p.city_id=?" : ""; const ca = city ? [city.id] : [];
+  const list = async (extra: string, limit: number) => {
+    const q = (scoped: boolean) => db.prepare(`SELECT ${PROP_COLS} ${PROP_JOIN} WHERE p.status='active' ${extra} ${scoped ? cw : ""} ORDER BY p.featured DESC, p.published_at DESC LIMIT ?`).bind(...(scoped ? ca : []), limit).all();
+    let r = await q(!!city);
+    // Nothing in this city yet? show the best of everywhere rather than an empty section.
+    if (city && r.results.length === 0) r = await q(false);
+    return r.results.map(shapeProp);
+  };
+  const [featured, latestSale, latestRent, owner, projects, posts, stats, types, localities, nearby] = await Promise.all([
+    list("AND p.featured=1", 10), list("AND p.listing_type='sale'", 8), list("AND p.listing_type='rent'", 8), list("AND p.owner_type='owner'", 8),
+    db.prepare(`SELECT pr.id,pr.slug,pr.name,pr.builder,pr.configurations,pr.price_min,pr.price_max,pr.possession,pr.images,c.name city_name,l.name locality_name FROM projects pr LEFT JOIN cities c ON c.id=pr.city_id LEFT JOIN localities l ON l.id=pr.locality_id WHERE pr.status='active' ${city ? "AND pr.city_id=?" : ""} ORDER BY pr.featured DESC, pr.id DESC LIMIT 6`).bind(...(city ? [city.id] : [])).all(),
     db.prepare("SELECT slug,title,excerpt,cover,author,created_at FROM posts WHERE published=1 ORDER BY created_at DESC LIMIT 3").all(),
-    db.prepare("SELECT (SELECT COUNT(*) FROM properties WHERE status='active') AS properties,(SELECT COUNT(*) FROM cities) AS cities,(SELECT COUNT(*) FROM users) AS users,(SELECT COUNT(*) FROM projects WHERE status='active') AS projects").first(),
+    db.prepare(`SELECT COUNT(*) AS properties, SUM(owner_type='owner') AS owners, SUM(listing_type='sale') AS sale, SUM(listing_type='rent') AS rent FROM properties p WHERE p.status='active' ${cw}`).bind(...ca).first(),
+    db.prepare(`SELECT p.property_type AS type, p.category, p.listing_type, COUNT(*) AS n FROM properties p WHERE p.status='active' ${cw} GROUP BY p.property_type, p.category, p.listing_type`).bind(...ca).all(),
+    city ? db.prepare("SELECT l.name,l.slug,COUNT(p.id) AS n FROM localities l LEFT JOIN properties p ON p.locality_id=l.id AND p.status='active' WHERE l.city_id=? GROUP BY l.id ORDER BY n DESC, l.name LIMIT 12").bind(city.id).all() : Promise.resolve({ results: [] }),
+    db.prepare("SELECT c.slug,c.name,c.state,c.image,(SELECT COUNT(*) FROM properties p WHERE p.city_id=c.id AND p.status='active') AS listings FROM cities c ORDER BY listings DESC, c.name LIMIT 16").all(),
   ]);
-  c.header("Cache-Control", "public, max-age=30");
   return c.json({
-    featured: featured.results.map(shapeProp), latestSale: latestSale.results.map(shapeProp), latestRent: latestRent.results.map(shapeProp),
-    projects: projects.results.map((p: any) => ({ ...p, images: parseJson(p.images, []) })), posts: posts.results, stats,
+    city, featured, latestSale, latestRent, owner, projects: projects.results.map((p: any) => ({ ...p, images: parseJson(p.images, []) })), posts: posts.results, stats, types: types.results, localities: localities.results, cities: nearby.results,
   });
 });
 

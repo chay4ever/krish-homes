@@ -4,10 +4,11 @@ import { Loader2, X } from "lucide-react";
 import { cx } from "@/lib/format";
 import { useLockScroll, useMedia } from "@/lib/hooks";
 
-type BtnProps = ButtonHTMLAttributes<HTMLButtonElement> & { variant?: "primary" | "dark" | "outline" | "ghost" | "gold" | "danger" | "soft"; size?: "sm" | "md" | "lg"; loading?: boolean; full?: boolean };
+type BtnProps = ButtonHTMLAttributes<HTMLButtonElement> & { variant?: "primary" | "dark" | "outline" | "ghost" | "gold" | "danger" | "soft" | "coral"; size?: "sm" | "md" | "lg"; loading?: boolean; full?: boolean };
 export function Button({ variant = "primary", size = "md", loading, full, className, children, disabled, ...p }: BtnProps) {
   const v = {
-    primary: "bg-brand-700 text-white hover:bg-brand-800 shadow-[0_8px_20px_-8px_rgb(10_94_80/0.6)]",
+    primary: "bg-gradient-to-r from-brand-700 to-cyan-700 text-white hover:from-brand-800 hover:to-cyan-800 shadow-[0_8px_20px_-8px_rgb(10_94_80/0.6)]",
+    coral: "bg-gradient-to-r from-coral-500 to-coral-400 text-white hover:from-coral-600 hover:to-coral-500 shadow-[0_10px_24px_-8px_rgb(236_107_69/0.65)]",
     dark: "bg-ink text-white hover:bg-black",
     gold: "bg-gold-400 text-ink hover:bg-gold-300 shadow-[0_8px_20px_-8px_rgb(212_162_76/0.7)]",
     outline: "border-[1.5px] border-line bg-white text-ink hover:border-brand-500 hover:text-brand-700",
@@ -47,8 +48,8 @@ export function Chip({ active, children, onClick, className }: { active?: boolea
   );
 }
 
-export function Badge({ children, tone = "brand", className }: { children: ReactNode; tone?: "brand" | "gold" | "ink" | "red" | "gray" | "green"; className?: string }) {
-  const t = { brand: "bg-brand-50 text-brand-800", gold: "bg-gold-100 text-gold-600", ink: "bg-ink text-white", red: "bg-red-50 text-red-700", gray: "bg-black/5 text-ink-2", green: "bg-emerald-50 text-emerald-700" }[tone];
+export function Badge({ children, tone = "brand", className }: { children: ReactNode; tone?: "brand" | "gold" | "ink" | "red" | "gray" | "green" | "sky" | "coral" | "violet"; className?: string }) {
+  const t = { brand: "bg-brand-50 text-brand-800", gold: "bg-gold-100 text-gold-600", ink: "bg-ink text-white", red: "bg-red-50 text-red-700", gray: "bg-black/5 text-ink-2", green: "bg-emerald-50 text-emerald-700", sky: "bg-sky-50 text-sky-700", coral: "bg-orange-50 text-coral-600", violet: "bg-violet-50 text-violet-700" }[tone];
   return <span className={cx("inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide", t, className)}>{children}</span>;
 }
 

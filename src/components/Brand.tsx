@@ -16,9 +16,9 @@ export function Logo({ light, className, to = "/" }: { light?: boolean; classNam
   const { brand } = useApp();
   const [a, ...rest] = brand.name.split(" ");
   return (
-    <Link to={to} className={cx("flex items-center gap-2.5", className)} aria-label={brand.name}>
-      <LogoMark />
-      <span className={cx("text-[1.35rem] font-extrabold leading-none tracking-tight", light ? "text-white" : "text-ink")}>
+    <Link to={to} className={cx("flex shrink-0 items-center gap-2 whitespace-nowrap sm:gap-2.5", className)} aria-label={brand.name}>
+      <LogoMark size={32} className="shrink-0 sm:size-9" />
+      <span className={cx("text-[1.2rem] font-extrabold max-[380px]:text-[1rem] sm:text-[1.35rem] leading-none tracking-tight", light ? "text-white" : "text-ink")}>
         {a}{rest.length > 0 && <span className={light ? "text-gold-300" : "text-brand-600"}> {rest.join(" ")}</span>}
       </span>
     </Link>

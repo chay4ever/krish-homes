@@ -4,14 +4,27 @@ import { AMENITIES } from "../shared/constants";
 const L = (n: string) => `/img/${n}.webp`;
 const U = (id: string) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=1400&q=70`;
 
-export const CITIES: { name: string; state: string; image: string; localities: string[] }[] = [
-  { name: "Hyderabad", state: "Telangana", image: U("photo-1572445271230-a78b5944a659"), localities: ["Gachibowli", "Kondapur", "Madhapur", "Banjara Hills", "Jubilee Hills", "Kokapet", "Miyapur", "Kukatpally", "Financial District", "Manikonda"] },
-  { name: "Bengaluru", state: "Karnataka", image: U("photo-1596176530529-78163a4f7af2"), localities: ["Whitefield", "Koramangala", "Indiranagar", "HSR Layout", "Electronic City", "Sarjapur Road", "Hebbal", "JP Nagar"] },
-  { name: "Mumbai", state: "Maharashtra", image: U("photo-1529253355930-ddbe423a2ac7"), localities: ["Bandra West", "Powai", "Andheri East", "Thane West", "Worli", "Chembur", "Navi Mumbai"] },
-  { name: "Delhi NCR", state: "Delhi", image: U("photo-1587474260584-136574528ed5"), localities: ["Gurgaon Sector 56", "Noida Sector 150", "Dwarka", "Greater Noida West", "Saket", "Vasant Kunj"] },
-  { name: "Pune", state: "Maharashtra", image: U("photo-1595658658481-d53d3f999875"), localities: ["Hinjewadi", "Baner", "Kharadi", "Wakad", "Viman Nagar", "Koregaon Park"] },
-  { name: "Chennai", state: "Tamil Nadu", image: U("photo-1582510003544-4d00b7f74220"), localities: ["OMR", "Velachery", "Adyar", "Anna Nagar", "Porur", "Tambaram"] },
-];
+const HERO = [L("hero-skyline"), L("hero-marketplace"), L("tenant-editorial"), L("listing-villa"), L("amenity-clubhouse"), L("listing-apartment")];
+const C = (name: string, state: string, localities: string[]) => ({ name, state, localities });
+// Andhra Pradesh first, then Hyderabad (Telangana).
+export const CITIES: { name: string; state: string; image?: string; localities: string[] }[] = [
+  C("Visakhapatnam", "Andhra Pradesh", ["MVP Colony", "Madhurawada", "Rushikonda", "Gajuwaka", "Seethammadhara", "Beach Road", "Dwaraka Nagar", "Pendurthi", "Kommadi", "Bheemili"]),
+  C("Vijayawada", "Andhra Pradesh", ["Benz Circle", "Patamata", "Auto Nagar", "Labbipet", "Gannavaram", "Poranki", "Governorpet", "Bhavanipuram", "Kanuru"]),
+  C("Guntur", "Andhra Pradesh", ["Brodipet", "Arundelpet", "Pattabhipuram", "Lakshmipuram", "Nallapadu", "Gorantla", "Amaravathi Road"]),
+  C("Tirupati", "Andhra Pradesh", ["Alipiri", "Korlagunta", "Renigunta", "Tiruchanur", "Air Bypass Road", "Leela Mahal Circle"]),
+  C("Amaravati", "Andhra Pradesh", ["Mangalagiri", "Tadepalli", "Thullur", "Undavalli", "Kuragallu", "Nowluru"]),
+  C("Nellore", "Andhra Pradesh", ["Stonehousepet", "Dargamitta", "Magunta Layout", "Pogathota", "Vedayapalem"]),
+  C("Kakinada", "Andhra Pradesh", ["Bhanugudi", "Ramanayyapeta", "Suryaraopeta", "Jagannaickpur", "Samalkot Road"]),
+  C("Rajahmundry", "Andhra Pradesh", ["Danavaipeta", "Innespeta", "Morampudi", "Lalacheruvu", "Kotipalli Bus Stand"]),
+  C("Kurnool", "Andhra Pradesh", ["Nandyal Road", "Budhwarpet", "Kallur", "Ashok Nagar", "Venkataramana Colony"]),
+  C("Kadapa", "Andhra Pradesh", ["Rims Road", "Marripadu", "Ravindranagar", "Yerramukkapalli"]),
+  C("Anantapur", "Andhra Pradesh", ["Subash Road", "Rudrampeta", "Tapovanam", "Kamala Nagar"]),
+  C("Ongole", "Andhra Pradesh", ["Trunk Road", "Kothapatnam", "Mangamuru Road", "Santhapeta"]),
+  C("Eluru", "Andhra Pradesh", ["Powerpet", "Ashok Nagar", "Ramachandra Rao Peta", "Sanivarapupeta"]),
+  C("Srikakulam", "Andhra Pradesh", ["Palakonda Road", "Day & Night Junction", "Narasannapeta"]),
+  C("Vizianagaram", "Andhra Pradesh", ["Kothagrahaaram", "Dasannapeta", "Ring Road"]),
+  C("Hyderabad", "Telangana", ["Gachibowli", "Kondapur", "Madhapur", "Banjara Hills", "Jubilee Hills", "Kokapet", "Miyapur", "Kukatpally", "Financial District", "Manikonda", "Uppal", "LB Nagar"]),
+].map((c, i) => ({ ...c, image: HERO[i % HERO.length] }));
 
 const IMG = {
   apt: [L("listing-apartment"), U("photo-1545324418-cc1a3fa10c00"), U("photo-1522708323590-d24dbb6b0267"), L("interior-living"), U("photo-1560448204-e02f11c3d0e2")],
@@ -29,39 +42,46 @@ type Seed = {
 };
 
 const LISTINGS: Seed[] = [
+  { title: "Sea-facing 3 BHK in Rushikonda with beach access", lt: "sale", type: "apartment", cat: "residential", city: "Visakhapatnam", loc: "Rushikonda", beds: 3, baths: 3, area: 1720, price: 14500000, img: "apt", featured: true, furn: "semi", face: "East", floor: 9, floors: 14, age: 2, maint: 4500, verified: true, owner: "builder" },
+  { title: "Spacious 2 BHK near Madhurawada IT Park", lt: "sale", type: "apartment", cat: "residential", city: "Visakhapatnam", loc: "Madhurawada", beds: 2, baths: 2, area: 1150, price: 6800000, img: "apt", furn: "unfurnished", face: "North-East", floor: 4, floors: 10, age: 1, maint: 2400, verified: true, owner: "owner" },
+  { title: "Furnished 2 BHK for rent in MVP Colony", lt: "rent", type: "apartment", cat: "residential", city: "Visakhapatnam", loc: "MVP Colony", beds: 2, baths: 2, area: 1100, price: 24000, img: "apt", featured: true, furn: "full", floor: 3, floors: 6, age: 5, deposit: 72000, owner: "owner" },
+  { title: "Independent house with garden in Seethammadhara", lt: "sale", type: "independent_house", cat: "residential", city: "Visakhapatnam", loc: "Seethammadhara", beds: 4, baths: 4, area: 2600, price: 19500000, img: "house", furn: "semi", face: "East", age: 6, plot: 2200, verified: true, owner: "owner" },
+  { title: "Approved layout plot near Bheemili beach road", lt: "sale", type: "plot", cat: "plot", city: "Visakhapatnam", loc: "Bheemili", area: 2160, price: 8640000, img: "plot", face: "North", plot: 2160, owner: "owner" },
+  { title: "Luxury 3 BHK with skyline views in Benz Circle", lt: "sale", type: "apartment", cat: "residential", city: "Vijayawada", loc: "Benz Circle", beds: 3, baths: 3, area: 1680, price: 11800000, img: "apt", featured: true, furn: "semi", face: "East", floor: 11, floors: 18, age: 2, maint: 3800, verified: true, owner: "builder" },
+  { title: "Ready-to-move 2 BHK in Patamata", lt: "sale", type: "apartment", cat: "residential", city: "Vijayawada", loc: "Patamata", beds: 2, baths: 2, area: 1050, price: 5900000, img: "apt", furn: "unfurnished", face: "West", floor: 5, floors: 9, age: 3, maint: 2000, owner: "owner" },
+  { title: "2 BHK flat for rent near Auto Nagar", lt: "rent", type: "apartment", cat: "residential", city: "Vijayawada", loc: "Auto Nagar", beds: 2, baths: 2, area: 1000, price: 16000, img: "apt", furn: "semi", floor: 2, floors: 5, age: 6, deposit: 48000, owner: "owner" },
+  { title: "Premium villa plot in Gannavaram airport zone", lt: "sale", type: "plot", cat: "plot", city: "Vijayawada", loc: "Gannavaram", area: 2400, price: 7200000, img: "plot", face: "East", plot: 2400, verified: true, owner: "agent" },
+  { title: "Corner shop on a busy road in Governorpet", lt: "sale", type: "shop", cat: "commercial", city: "Vijayawada", loc: "Governorpet", area: 620, price: 9800000, img: "shop", floor: 0, floors: 3, age: 8, owner: "agent" },
+  { title: "Gated community 3 BHK in Brodipet", lt: "sale", type: "apartment", cat: "residential", city: "Guntur", loc: "Brodipet", beds: 3, baths: 3, area: 1550, price: 7900000, img: "apt", featured: true, furn: "semi", face: "North", floor: 6, floors: 12, age: 1, maint: 2800, verified: true, owner: "builder" },
+  { title: "Spacious 2 BHK for rent in Pattabhipuram", lt: "rent", type: "apartment", cat: "residential", city: "Guntur", loc: "Pattabhipuram", beds: 2, baths: 2, area: 1050, price: 14000, img: "apt", furn: "semi", floor: 3, floors: 5, age: 4, deposit: 42000, owner: "owner" },
+  { title: "Duplex villa near Gorantla with private garden", lt: "sale", type: "villa", cat: "residential", city: "Guntur", loc: "Gorantla", beds: 4, baths: 4, area: 3100, price: 21500000, img: "villa", furn: "semi", face: "East", age: 2, plot: 3000, verified: true, owner: "agent" },
+  { title: "3 BHK near Alipiri, minutes from the temple", lt: "sale", type: "apartment", cat: "residential", city: "Tirupati", loc: "Alipiri", beds: 3, baths: 3, area: 1480, price: 8900000, img: "apt", featured: true, furn: "unfurnished", face: "East", floor: 4, floors: 8, age: 2, maint: 2500, verified: true, owner: "builder" },
+  { title: "Student-friendly 1 BHK for rent near Korlagunta", lt: "rent", type: "apartment", cat: "residential", city: "Tirupati", loc: "Korlagunta", beds: 1, baths: 1, area: 640, price: 9000, img: "apt", furn: "semi", floor: 2, floors: 4, age: 5, deposit: 27000, owner: "owner" },
+  { title: "Capital-region plot in Thullur, CRDA approved", lt: "sale", type: "plot", cat: "plot", city: "Amaravati", loc: "Thullur", area: 1800, price: 5400000, img: "plot", face: "North-East", plot: 1800, verified: true, owner: "owner" },
+  { title: "New 3 BHK in Mangalagiri near AIIMS", lt: "sale", type: "apartment", cat: "residential", city: "Amaravati", loc: "Mangalagiri", beds: 3, baths: 3, area: 1620, price: 8600000, img: "apt", featured: true, furn: "unfurnished", face: "East", floor: 7, floors: 15, age: 0, maint: 2600, poss: "under_construction", owner: "builder" },
+  { title: "Ready 2 BHK flat in Tadepalli on the river side", lt: "sale", type: "apartment", cat: "residential", city: "Amaravati", loc: "Tadepalli", beds: 2, baths: 2, area: 1120, price: 6200000, img: "apt", furn: "semi", face: "West", floor: 3, floors: 6, age: 3, owner: "owner" },
+  { title: "Independent 3 BHK house in Stonehousepet", lt: "sale", type: "independent_house", cat: "residential", city: "Nellore", loc: "Stonehousepet", beds: 3, baths: 3, area: 2000, price: 9500000, img: "house", furn: "unfurnished", face: "East", age: 7, plot: 1800, owner: "owner" },
+  { title: "2 BHK for rent near Dargamitta", lt: "rent", type: "apartment", cat: "residential", city: "Nellore", loc: "Dargamitta", beds: 2, baths: 2, area: 980, price: 12000, img: "apt", furn: "semi", floor: 1, floors: 4, age: 6, deposit: 36000, owner: "owner" },
+  { title: "Modern 3 BHK in Bhanugudi, Kakinada", lt: "sale", type: "apartment", cat: "residential", city: "Kakinada", loc: "Bhanugudi", beds: 3, baths: 3, area: 1480, price: 7400000, img: "apt", furn: "semi", face: "East", floor: 5, floors: 9, age: 2, maint: 2200, verified: true, owner: "builder" },
+  { title: "Spacious 2 BHK near Danavaipeta, Rajahmundry", lt: "sale", type: "apartment", cat: "residential", city: "Rajahmundry", loc: "Danavaipeta", beds: 2, baths: 2, area: 1080, price: 5600000, img: "apt", furn: "unfurnished", face: "North", floor: 3, floors: 7, age: 3, owner: "owner" },
+  { title: "Commercial space on Nandyal Road, Kurnool", lt: "rent", type: "office", cat: "commercial", city: "Kurnool", loc: "Nandyal Road", area: 1500, price: 45000, img: "office", furn: "semi", floor: 1, floors: 3, age: 4, deposit: 270000, owner: "agent" },
+  { title: "East-facing plot in a gated layout, Kadapa", lt: "sale", type: "plot", cat: "plot", city: "Kadapa", loc: "Rims Road", area: 1500, price: 3750000, img: "plot", face: "East", plot: 1500, owner: "owner" },
+  { title: "Fully furnished 2 BHK for rent in Kondapur", lt: "rent", type: "apartment", cat: "residential", city: "Hyderabad", loc: "Kondapur", beds: 2, baths: 2, area: 1250, price: 38000, img: "apt", featured: true, furn: "full", face: "West", floor: 9, floors: 20, age: 4, deposit: 150000, verified: true },
   { title: "Luxury 3 BHK with skyline views in Kokapet", lt: "sale", type: "apartment", cat: "residential", city: "Hyderabad", loc: "Kokapet", beds: 3, baths: 3, area: 1850, price: 21500000, img: "apt", featured: true, furn: "semi", face: "East", floor: 18, floors: 32, age: 1, maint: 6500, verified: true, owner: "builder" },
   { title: "Spacious 2 BHK near IT corridor, Gachibowli", lt: "sale", type: "apartment", cat: "residential", city: "Hyderabad", loc: "Gachibowli", beds: 2, baths: 2, area: 1180, price: 9200000, img: "apt", furn: "semi", face: "North-East", floor: 7, floors: 14, age: 3, maint: 3200, verified: true },
   { title: "Premium 4 BHK villa with private pool", lt: "sale", type: "villa", cat: "residential", city: "Hyderabad", loc: "Jubilee Hills", beds: 4, baths: 5, area: 4200, price: 98000000, img: "villa", featured: true, furn: "full", face: "East", age: 2, plot: 4800, verified: true, owner: "agent" },
-  { title: "Fully furnished 2 BHK for rent in Kondapur", lt: "rent", type: "apartment", cat: "residential", city: "Hyderabad", loc: "Kondapur", beds: 2, baths: 2, area: 1250, price: 38000, img: "apt", featured: true, furn: "full", face: "West", floor: 9, floors: 20, age: 4, deposit: 150000, maint: 0, verified: true },
   { title: "Ready-to-build DTCP plot in Miyapur", lt: "sale", type: "plot", cat: "plot", city: "Hyderabad", loc: "Miyapur", area: 2400, price: 14400000, img: "plot", face: "North", plot: 2400, owner: "owner" },
   { title: "Budget 1 BHK for rent in Madhapur", lt: "rent", type: "apartment", cat: "residential", city: "Hyderabad", loc: "Madhapur", beds: 1, baths: 1, area: 620, price: 16500, img: "apt", furn: "semi", floor: 3, floors: 5, age: 6, deposit: 66000, owner: "owner" },
   { title: "Grade-A office space in Financial District", lt: "rent", type: "office", cat: "commercial", city: "Hyderabad", loc: "Financial District", area: 3200, price: 256000, img: "office", furn: "full", floor: 6, floors: 12, age: 2, deposit: 1536000, verified: true, owner: "agent" },
-  { title: "Gated community 3 BHK in Whitefield", lt: "sale", type: "apartment", cat: "residential", city: "Bengaluru", loc: "Whitefield", beds: 3, baths: 3, area: 1650, price: 15800000, img: "apt", featured: true, furn: "semi", face: "North", floor: 11, floors: 24, age: 2, maint: 5400, verified: true, owner: "builder" },
-  { title: "Designer 2 BHK in Koramangala, walk to cafés", lt: "rent", type: "apartment", cat: "residential", city: "Bengaluru", loc: "Koramangala", beds: 2, baths: 2, area: 1100, price: 55000, img: "apt", featured: true, furn: "full", floor: 4, floors: 8, age: 5, deposit: 275000, verified: true },
-  { title: "Independent house with garden, HSR Layout", lt: "sale", type: "independent_house", cat: "residential", city: "Bengaluru", loc: "HSR Layout", beds: 4, baths: 4, area: 2800, price: 52000000, img: "house", furn: "unfurnished", face: "East", age: 8, plot: 2400, owner: "owner" },
-  { title: "Sunny 1 BHK studio near Indiranagar metro", lt: "rent", type: "studio", cat: "residential", city: "Bengaluru", loc: "Indiranagar", beds: 1, baths: 1, area: 520, price: 32000, img: "apt", furn: "full", floor: 2, floors: 4, age: 3, deposit: 160000 },
-  { title: "Corner shop in a busy high-street, Sarjapur Road", lt: "sale", type: "shop", cat: "commercial", city: "Bengaluru", loc: "Sarjapur Road", area: 780, price: 18500000, img: "shop", floor: 0, floors: 3, age: 4, verified: true, owner: "agent" },
-  { title: "Sea-facing 3 BHK in Bandra West", lt: "sale", type: "apartment", cat: "residential", city: "Mumbai", loc: "Bandra West", beds: 3, baths: 3, area: 1450, price: 78000000, img: "apt", featured: true, furn: "full", face: "West", floor: 15, floors: 26, age: 6, maint: 22000, verified: true, owner: "agent" },
-  { title: "Lake-view 2 BHK in Powai", lt: "rent", type: "apartment", cat: "residential", city: "Mumbai", loc: "Powai", beds: 2, baths: 2, area: 980, price: 72000, img: "apt", furn: "semi", floor: 12, floors: 22, age: 5, deposit: 360000, verified: true },
-  { title: "Affordable 2 BHK in Thane West", lt: "sale", type: "apartment", cat: "residential", city: "Mumbai", loc: "Thane West", beds: 2, baths: 2, area: 760, price: 12500000, img: "apt", furn: "unfurnished", face: "South", floor: 8, floors: 18, age: 1, maint: 2800, owner: "builder" },
-  { title: "Spacious 4 BHK in Gurgaon Sector 56", lt: "sale", type: "apartment", cat: "residential", city: "Delhi NCR", loc: "Gurgaon Sector 56", beds: 4, baths: 4, area: 2900, price: 42000000, img: "apt", featured: true, furn: "semi", face: "North-East", floor: 14, floors: 30, age: 3, maint: 11000, verified: true, owner: "builder" },
-  { title: "Brand-new 3 BHK in Noida Sector 150", lt: "sale", type: "apartment", cat: "residential", city: "Delhi NCR", loc: "Noida Sector 150", beds: 3, baths: 3, area: 1720, price: 16800000, img: "apt", furn: "unfurnished", face: "East", floor: 10, floors: 28, age: 0, maint: 4200, poss: "under_construction", owner: "builder" },
-  { title: "Builder floor 3 BHK in Saket", lt: "rent", type: "builder_floor", cat: "residential", city: "Delhi NCR", loc: "Saket", beds: 3, baths: 3, area: 1800, price: 95000, img: "house", furn: "semi", floor: 2, floors: 4, age: 7, deposit: 285000 },
-  { title: "Tech-park adjacent 2 BHK, Hinjewadi", lt: "rent", type: "apartment", cat: "residential", city: "Pune", loc: "Hinjewadi", beds: 2, baths: 2, area: 1020, price: 28000, img: "apt", furn: "semi", floor: 6, floors: 12, age: 4, deposit: 84000, owner: "owner" },
-  { title: "Premium 3 BHK in Baner with clubhouse", lt: "sale", type: "apartment", cat: "residential", city: "Pune", loc: "Baner", beds: 3, baths: 3, area: 1480, price: 17500000, img: "apt", featured: true, furn: "semi", face: "North", floor: 9, floors: 18, age: 2, maint: 4500, verified: true },
-  { title: "Row villa with terrace garden in Kharadi", lt: "sale", type: "villa", cat: "residential", city: "Pune", loc: "Kharadi", beds: 4, baths: 4, area: 3100, price: 38500000, img: "villa", furn: "semi", face: "East", age: 1, plot: 2000, owner: "builder", verified: true },
-  { title: "Metro-connected 2 BHK on OMR", lt: "sale", type: "apartment", cat: "residential", city: "Chennai", loc: "OMR", beds: 2, baths: 2, area: 1090, price: 8900000, img: "apt", furn: "unfurnished", face: "East", floor: 5, floors: 15, age: 1, maint: 2600, owner: "builder" },
-  { title: "Peaceful 3 BHK in Adyar, near the river", lt: "rent", type: "apartment", cat: "residential", city: "Chennai", loc: "Adyar", beds: 3, baths: 3, area: 1700, price: 62000, img: "apt", furn: "full", floor: 3, floors: 6, age: 8, deposit: 310000, verified: true },
-  { title: "Corner plot with road on two sides, Porur", lt: "sale", type: "plot", cat: "plot", city: "Chennai", loc: "Porur", area: 1800, price: 11700000, img: "plot", face: "North-East", plot: 1800, owner: "owner", verified: true },
   { title: "Boutique PG for working women, Manikonda", lt: "rent", type: "pg", cat: "residential", city: "Hyderabad", loc: "Manikonda", beds: 1, area: 150, price: 9500, img: "apt", furn: "full", deposit: 9500, owner: "owner" },
-  { title: "High-street retail showroom in Andheri East", lt: "rent", type: "shop", cat: "commercial", city: "Mumbai", loc: "Andheri East", area: 1100, price: 210000, img: "shop", floor: 0, floors: 2, age: 10, deposit: 1260000, owner: "agent" },
 ];
 
 const PROJECTS = [
-  { name: "Aurum Skyline Residences", builder: "Aurum Developers", city: "Hyderabad", loc: "Kokapet", cfg: "3, 4 BHK Apartments", pmin: 18500000, pmax: 34000000, amin: 1650, amax: 3100, poss: "Dec 2027", units: 420, featured: 1, img: [L("hero-skyline"), U("photo-1545324418-cc1a3fa10c00"), L("amenity-clubhouse")], desc: "Twin-tower high-rise living with a 40,000 sq ft clubhouse, sky lounge and uninterrupted views of the Financial District skyline." },
-  { name: "Lakeview Greens", builder: "Greenfield Realty", city: "Bengaluru", loc: "Whitefield", cfg: "2, 3 BHK Apartments", pmin: 9800000, pmax: 17500000, amin: 1120, amax: 1780, poss: "Jun 2027", units: 640, featured: 1, img: [L("listing-apartment"), L("amenity-clubhouse"), L("interior-living")], desc: "A 12-acre gated enclave with 70% open space, walking trails around a restored lake and an international school next door." },
-  { name: "Marina Bay Towers", builder: "Coastal Estates", city: "Mumbai", loc: "Navi Mumbai", cfg: "1, 2, 3 BHK Apartments", pmin: 8700000, pmax: 24500000, amin: 640, amax: 1500, poss: "Mar 2028", units: 900, featured: 1, img: [L("hero-marketplace"), U("photo-1486406146926-c627a92ad1ab"), L("interior-living")], desc: "Waterfront-inspired towers a short walk from the upcoming metro and airport corridor, with resort-style amenities." },
-  { name: "The Orchard Villas", builder: "Vriksha Homes", city: "Pune", loc: "Kharadi", cfg: "4 BHK Villas", pmin: 32000000, pmax: 45000000, amin: 2800, amax: 3600, poss: "Ready to move", units: 64, featured: 0, img: [L("listing-villa"), U("photo-1613490493576-7fde63acd811"), L("tenant-editorial")], desc: "Low-density row villas with private terraces, EV-ready garages and a fruit-orchard central park." },
+  { name: "Aurum Bay Residences", builder: "Aurum Developers", city: "Visakhapatnam", loc: "Madhurawada", cfg: "2, 3 BHK Apartments", pmin: 6900000, pmax: 12500000, amin: 1120, amax: 1780, poss: "Dec 2027", units: 420, featured: 1, img: [L("hero-skyline"), L("listing-apartment"), L("amenity-clubhouse")], desc: "Hill-and-sea view high-rise towers minutes from the IT corridor, with a 30,000 sq ft clubhouse, sky deck and 70% open space." },
+  { name: "Krishna Greens", builder: "Greenfield Realty", city: "Vijayawada", loc: "Benz Circle", cfg: "2, 3 BHK Apartments", pmin: 5800000, pmax: 10500000, amin: 1050, amax: 1680, poss: "Jun 2027", units: 320, featured: 1, img: [L("listing-apartment"), L("amenity-clubhouse"), L("interior-living")], desc: "A landscaped gated enclave close to the city's best schools and hospitals, with a podium garden, indoor games and 24x7 security." },
+  { name: "Capital Heights", builder: "Amaravati Estates", city: "Amaravati", loc: "Mangalagiri", cfg: "2, 3 BHK Apartments", pmin: 5400000, pmax: 9800000, amin: 1080, amax: 1620, poss: "Mar 2028", units: 560, featured: 1, img: [L("hero-marketplace"), L("tenant-editorial"), L("interior-living")], desc: "Modern homes in the capital region with easy access to AIIMS, the expressway and upcoming government offices." },
+  { name: "Venkatadri Villas", builder: "Vriksha Homes", city: "Tirupati", loc: "Air Bypass Road", cfg: "3, 4 BHK Villas", pmin: 12500000, pmax: 19500000, amin: 2200, amax: 3200, poss: "Ready to move", units: 64, featured: 0, img: [L("listing-villa"), L("tenant-editorial"), L("amenity-clubhouse")], desc: "Low-density villas with private gardens, a temple-view park and EV-ready garages, close to the railway station and highway." },
+  { name: "Skyline Square", builder: "Aurum Developers", city: "Hyderabad", loc: "Kokapet", cfg: "3, 4 BHK Apartments", pmin: 18500000, pmax: 34000000, amin: 1650, amax: 3100, poss: "Dec 2027", units: 420, featured: 1, img: [L("hero-skyline"), L("listing-apartment"), L("amenity-clubhouse")], desc: "Twin-tower high-rise living with a 40,000 sq ft clubhouse and uninterrupted views of the Financial District skyline." },
 ];
 
 const POSTS = [
@@ -71,11 +91,12 @@ const POSTS = [
 ];
 
 const AGENTS = [
-  { name: "Ananya Rao", email: "ananya@krishhomes.in", phone: "+91 98000 11111", agency: "Krish Homes Hyderabad", bio: "10 years helping families settle in Hyderabad's West corridor.", rera: "RERA-TS-A-0001" },
-  { name: "Rahul Mehta", email: "rahul@krishhomes.in", phone: "+91 98000 22222", agency: "Krish Homes Mumbai", bio: "Specialist in premium apartments across Bandra, Worli and Powai.", rera: "RERA-MH-A-0002" },
-  { name: "Priya Nair", email: "priya@krishhomes.in", phone: "+91 98000 33333", agency: "Krish Homes Bengaluru", bio: "Rentals and resale expert for Koramangala, HSR and Whitefield.", rera: "RERA-KA-A-0003" },
+  { name: "Srinivas Reddy", email: "srinivas@krishhomes.in", phone: "+91 98000 11111", agency: "Krish Homes Visakhapatnam", bio: "12 years helping families find homes across Vizag — from Beach Road to Madhurawada.", rera: "RERA-AP-A-0001" },
+  { name: "Lakshmi Prasanna", email: "lakshmi@krishhomes.in", phone: "+91 98000 22222", agency: "Krish Homes Vijayawada", bio: "Specialist in apartments, plots and capital-region investments around Vijayawada and Amaravati.", rera: "RERA-AP-A-0002" },
+  { name: "Karthik Varma", email: "karthik@krishhomes.in", phone: "+91 98000 33333", agency: "Krish Homes Hyderabad", bio: "Rentals and resale expert for Gachibowli, Kondapur and Madhapur.", rera: "RERA-TS-A-0003" },
 ];
 
+const agentFor = (city: string, i: number) => (city === "Hyderabad" ? 2 : ["Vijayawada", "Guntur", "Amaravati", "Eluru", "Nellore", "Ongole"].includes(city) ? 1 : city === "Visakhapatnam" ? 0 : i % 2);
 const pick = <T,>(arr: readonly T[], seed: number, n: number): T[] => {
   const out: T[] = [];
   for (let i = 0; i < n; i++) out.push(arr[(seed * 7 + i * 5) % arr.length]);
@@ -83,12 +104,14 @@ const pick = <T,>(arr: readonly T[], seed: number, n: number): T[] => {
 };
 
 export async function seedDemoData(db: D1Database, hashPassword: (p: string) => Promise<{ hash: string; salt: string }>) {
+  const mark = await db.prepare("SELECT value FROM settings WHERE key='seed_v'").first();
+  if (mark) return;
   const has = await db.prepare("SELECT COUNT(*) c FROM cities").first<{ c: number }>();
-  if (has && has.c > 0) return;
+  if (has && has.c > 0) await retireV1Demo(db);
 
   const stmts: D1PreparedStatement[] = [];
   CITIES.forEach((c, i) => {
-    stmts.push(db.prepare("INSERT OR IGNORE INTO cities (slug,name,state,image,featured) VALUES (?,?,?,?,?)").bind(slugify(c.name), c.name, c.state, c.image, i < 6 ? 1 : 0));
+    stmts.push(db.prepare("INSERT OR IGNORE INTO cities (slug,name,state,image,featured) VALUES (?,?,?,?,?)").bind(slugify(c.name), c.name, c.state, c.image, i < 8 || c.name === "Hyderabad" ? 1 : 0));
   });
   await db.batch(stmts);
   const cityRows = (await db.prepare("SELECT id,slug,name FROM cities").all<{ id: number; slug: string; name: string }>()).results;
@@ -104,7 +127,8 @@ export async function seedDemoData(db: D1Database, hashPassword: (p: string) => 
     await db.prepare("INSERT OR IGNORE INTO staff (email,name,phone,role,password_hash,salt,agency,bio,rera_id,must_change_password) VALUES (?,?,?, 'agent', ?,?,?,?,?,1)")
       .bind(a.email, a.name, a.phone, junk.hash, junk.salt, a.agency, a.bio, a.rera).run();
   }
-  const agentIds = (await db.prepare("SELECT id FROM staff WHERE role='agent' ORDER BY id").all<{ id: number }>()).results.map((r) => r.id);
+  const agentRows = (await db.prepare("SELECT id,email FROM staff WHERE role='agent'").all<{ id: number; email: string }>()).results;
+  const agentIds = AGENTS.map((a) => agentRows.find((r) => r.email === a.email)!.id);
 
   // Projects
   for (const p of PROJECTS) {
@@ -120,7 +144,7 @@ export async function seedDemoData(db: D1Database, hashPassword: (p: string) => 
     const imgs = IMG[s.img];
     const images = [...imgs.slice(i % 2), ...imgs.slice(0, i % 2)];
     const slug = `${slugify(s.title)}-${(1000 + i * 37).toString(36)}`;
-    const ag = agentIds[i % agentIds.length];
+    const ag = agentIds[agentFor(s.city, i)];
     const desc = `${s.title}. Located in ${s.loc}, ${s.city}, this ${s.type.replace(/_/g, " ")} offers ${s.area.toLocaleString("en-IN")} sq ft of well-planned space${s.beds ? ` with ${s.beds} bedrooms` : ""}. ` +
       `Close to schools, hospitals, shopping and public transport, with excellent connectivity to the main business districts.\n\n` +
       `${s.lt === "rent" ? "Available for immediate move-in. Bachelors and families both welcome subject to owner approval." : "Clear title, bank-loan approved and ready for registration. Serious buyers can schedule a site visit any day of the week."}\n\n` +
@@ -132,7 +156,7 @@ export async function seedDemoData(db: D1Database, hashPassword: (p: string) => 
       .bind(slug, s.title, desc, s.lt, s.cat, s.type, s.beds ?? null, s.baths ?? null, s.beds ? Math.min(3, s.beds) : null, s.area, s.plot ?? null, s.price, s.maint ?? null, s.deposit ?? null,
         i % 3 === 0 ? 1 : 0, s.furn ?? null, s.face ?? null, s.floor ?? null, s.floors ?? null, s.age ?? null, s.poss ?? "ready", s.cat === "plot" ? null : 1 + (i % 3),
         cityId[s.city], locId(s.city, s.loc), `${s.loc}, ${s.city}`, JSON.stringify(s.cat === "plot" ? ["Gated Community", "Rain Water Harvesting", "24x7 Security"] : pick(AMENITIES, i + 3, 10)),
-        JSON.stringify(images), s.owner ?? "agent", ag, AGENTS[i % AGENTS.length].name, AGENTS[i % AGENTS.length].phone, s.featured ? 1 : 0, s.verified ? 1 : 0, 40 + ((i * 53) % 400), `-${i * 2} hours`));
+        JSON.stringify(images), s.owner ?? "agent", ag, AGENTS[agentFor(s.city, i)].name, AGENTS[agentFor(s.city, i)].phone, s.featured ? 1 : 0, s.verified ? 1 : 0, 40 + ((i * 53) % 400), `-${i * 2} hours`));
   });
   await db.batch(batch);
 
@@ -140,4 +164,24 @@ export async function seedDemoData(db: D1Database, hashPassword: (p: string) => 
     await db.prepare("INSERT OR IGNORE INTO posts (slug,title,excerpt,content,cover,author,created_at) VALUES (?,?,?,?,?,?,datetime('now', ?))")
       .bind(slugify(p.title), p.title, p.excerpt, p.body, p.cover, "Krish Homes Editorial", `-${i * 6} days`).run();
   }
+  await db.prepare("INSERT OR REPLACE INTO settings (key,value) VALUES ('seed_v','2')").run();
+}
+
+/** One-time clean-up of the first demo data set (Mumbai/Bengaluru/etc.) so the catalogue starts with Andhra Pradesh + Hyderabad. Real (non-demo) listings are kept. */
+async function retireV1Demo(db: D1Database) {
+  const demoAgents = "(SELECT id FROM staff WHERE email IN ('ananya@krishhomes.in','rahul@krishhomes.in','priya@krishhomes.in'))";
+  const demoProps = `(SELECT id FROM properties WHERE user_id IS NULL AND staff_id IN ${demoAgents})`;
+  await db.batch([
+    db.prepare(`DELETE FROM favorites WHERE property_id IN ${demoProps}`),
+    db.prepare(`UPDATE leads SET property_id=NULL WHERE property_id IN ${demoProps}`),
+    db.prepare(`DELETE FROM properties WHERE id IN ${demoProps}`),
+    db.prepare("UPDATE leads SET project_id=NULL WHERE project_id IN (SELECT id FROM projects WHERE slug IN ('aurum-skyline-residences','lakeview-greens','marina-bay-towers','the-orchard-villas'))"),
+    db.prepare("UPDATE properties SET project_id=NULL WHERE project_id IN (SELECT id FROM projects WHERE slug IN ('aurum-skyline-residences','lakeview-greens','marina-bay-towers','the-orchard-villas'))"),
+    db.prepare("DELETE FROM projects WHERE slug IN ('aurum-skyline-residences','lakeview-greens','marina-bay-towers','the-orchard-villas')"),
+    db.prepare(`UPDATE leads SET assigned_staff_id=NULL WHERE assigned_staff_id IN ${demoAgents}`),
+    db.prepare(`UPDATE properties SET staff_id=NULL WHERE staff_id IN ${demoAgents}`),
+    db.prepare("DELETE FROM staff WHERE email IN ('ananya@krishhomes.in','rahul@krishhomes.in','priya@krishhomes.in')"),
+    db.prepare("DELETE FROM localities WHERE city_id IN (SELECT id FROM cities WHERE slug IN ('bengaluru','mumbai','delhi-ncr','pune','chennai') AND id NOT IN (SELECT city_id FROM properties) AND id NOT IN (SELECT city_id FROM projects WHERE city_id IS NOT NULL))"),
+    db.prepare("DELETE FROM cities WHERE slug IN ('bengaluru','mumbai','delhi-ncr','pune','chennai') AND id NOT IN (SELECT city_id FROM properties) AND id NOT IN (SELECT city_id FROM projects WHERE city_id IS NOT NULL)"),
+  ]);
 }
